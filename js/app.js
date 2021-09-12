@@ -1,6 +1,6 @@
 const loadProducts = () => {
   // const url = `https://fakestoreapi.com/products`;
-  const url = `https://raw.githubusercontent.com/ProgrammingHero1/ranga-store-api/main/ranga-api.json`;
+  const url = `https://raw.githubusercontent.com/ProgrammingHero1/ranga-store-api/main/ranga-api.json`; //update api
   fetch(url)
     .then((response) => response.json())
     .then((data) => showProducts(data));
@@ -32,7 +32,9 @@ const showProducts = (products) => {
     document.getElementById("all-products").appendChild(div);
   }
 };
+//Count how many add to cart
 let count = 0;
+//click add cart to execute the function
 const addToCart = (id, price) => {
   count = count + 1;
   updatePrice("price", price);
@@ -40,6 +42,7 @@ const addToCart = (id, price) => {
   document.getElementById("total-Products").innerText = count;
 };
 
+//get value of HTML DOM by id
 const getInputValue = (id) => {
   const element = document.getElementById(id).innerText;
   const converted = parseFloat(element);
@@ -82,14 +85,17 @@ const updateTotal = () => {
   const grandTotal =
     getInputValue("price") + getInputValue("delivery-charge") +
     getInputValue("total-tax");
-  document.getElementById("total").innerText = grandTotal;
+  document.getElementById("total").innerText = grandTotal.toFixed(2);
 };
 
+//Get A an singel prodcut details by product id
 const getSingalProduct = (id) => {
   fetch(`https://fakestoreapi.com/products/${id}`)
     .then(res => res.json())
     .then(data => showModal(data));
 }
+
+//Update modal UI
 const showModal = data => {
   const productName = document.getElementById('detailsModalLabel');
   productName.innerText = 'Name: ' + data.title;
