@@ -1,5 +1,6 @@
 const loadProducts = () => {
-  const url = `https://fakestoreapi.com/products`;
+  // const url = `https://fakestoreapi.com/products`;
+  const url = `https://raw.githubusercontent.com/ProgrammingHero1/ranga-store-api/main/ranga-api.json`;
   fetch(url)
     .then((response) => response.json())
     .then((data) => showProducts(data));
@@ -10,18 +11,23 @@ loadProducts();
 const showProducts = (products) => {
   const allProducts = products.map((pd) => pd);
   for (const product of allProducts) {
-    const image = product.images;
+    const image = product.image;
     const div = document.createElement("div");
-    div.classList.add("product");
-    div.innerHTML = `<div class="single-product">
-      <div>
-    <img class="product-image" src=${image}></img>
+    div.className = "col";
+    div.innerHTML = `
+    <div class="card h-100 p-3 text-center single-product">
+      <img class="product-image card-img-top w-50 m-auto" src=${image}></img>
+      <div class="card-body">
+        <h3>${product.title}</h3>
+        <p>Category: ${product.category}</p>
+        <h5>Rating: ${product.rating.rate} (${product.rating.count})</h5>
+        <h2>Price: $ ${product.price}</h2>
       </div>
-      <h3>${product.title}</h3>
-      <p>Category: ${product.category}</p>
-      <h2>Price: $ ${product.price}</h2>
-      <button onclick="addToCart(${product.id},${product.price})" id="addToCart-btn" class="buy-now btn btn-success">add to cart</button>
-      <button id="details-btn" class="btn btn-danger">Details</button></div>
+      <div class="card-footer">
+        <button onclick="addToCart(${product.id},${product.price})" id="addToCart-btn" class="buy-now btn btn-success">add to cart</button>
+        <button id="details-btn" class="btn btn-danger" onclick=getSingalProduct(${product.id}); data-bs-toggle="modal" data-bs-target="#detailsModal">Details</button>
+      </div>
+    </div>
       `;
     document.getElementById("all-products").appendChild(div);
   }
@@ -30,14 +36,13 @@ let count = 0;
 const addToCart = (id, price) => {
   count = count + 1;
   updatePrice("price", price);
-
   updateTaxAndCharge();
   document.getElementById("total-Products").innerText = count;
 };
 
 const getInputValue = (id) => {
   const element = document.getElementById(id).innerText;
-  const converted = parseInt(element);
+  const converted = parseFloat(element);
   return converted;
 };
 
@@ -46,7 +51,7 @@ const updatePrice = (id, value) => {
   const convertedOldPrice = getInputValue(id);
   const convertPrice = parseFloat(value);
   const total = convertedOldPrice + convertPrice;
-  document.getElementById(id).innerText = Math.round(total);
+  document.getElementById(id).innerText = total.toFixed(2);
 };
 
 // set innerText function
@@ -69,6 +74,7 @@ const updateTaxAndCharge = () => {
     setInnerText("delivery-charge", 60);
     setInnerText("total-tax", priceConverted * 0.4);
   }
+  updateTotal();
 };
 
 //grandTotal update function
@@ -78,3 +84,15 @@ const updateTotal = () => {
     getInputValue("total-tax");
   document.getElementById("total").innerText = grandTotal;
 };
+
+const getSingalProduct = (id) => {
+  fetch(`https://fakestoreapi.com/products/${id}`)
+    .then(res => res.json())
+    .then(data => showModal(data));
+}
+const showModal = data => {
+  const productName = document.getElementById('detailsModalLabel');
+  productName.innerText = 'Name: ' + data.title;
+  const productDescription = document.getElementById('productDescription');
+  productDescription.innerText = 'Description: ' + data.description;
+}
